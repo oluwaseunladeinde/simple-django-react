@@ -1,61 +1,50 @@
-import { useState, useEffect } from 'react'
-import api from '../api'
+import { useState, useEffect } from "react";
+import api from "../api";
 import Note from "../components/Note"
 import "../styles/Home.css"
-import LoadingIndicator from '../components/LoadingIndicator'
-
 
 function Home() {
-
-    const [notes, setNotes] = useState([])
-    const [title, setTitle] = useState("")
-    const [content, setContent] = useState("")
-    const [loading, setLoading] = useState(false)
+    const [notes, setNotes] = useState([]);
+    const [content, setContent] = useState("");
+    const [title, setTitle] = useState("");
 
     useEffect(() => {
         getNotes();
-    }, [])
+    }, []);
 
     const getNotes = () => {
         api
-            .get(`/api/notes/`)
-            .then(res => res.data)
+            .get("/api/notes/")
+            .then((res) => res.data)
             .then((data) => {
-                console.log({ data });
-                setNotes(data)
+                setNotes(data);
+                console.log(data);
             })
-            .catch((err) => alert(err))
-    }
+            .catch((err) => alert(err));
+    };
 
     const deleteNote = (id) => {
-        api.delete(`/api/notes/delete/${id}/`)
+        api
+            .delete(`/api/notes/delete/${id}/`)
             .then((res) => {
-                if (res.status === 204) console.log("Note deleted")
-                else console.log("Note not deleted")
-                //getNotes();
-
-                const updatedNotes = notes.filter((item) => item.id !== id);
-                setNotes(updatedNotes)
+                if (res.status === 204) alert("Note deleted!");
+                else alert("Failed to delete note.");
+                getNotes();
             })
-
-
-    }
+            .catch((error) => alert(error));
+    };
 
     const createNote = (e) => {
-        e.preventDefault()
-        setLoading(true)
+        e.preventDefault();
         api
-            .post(`/api/notes/`, { content, title })
+            .post("/api/notes/", { content, title })
             .then((res) => {
-                if (res.status === 201) console.log("Note created")
-                else console.log("Note not created")
-                getNotes()
+                if (res.status === 201) alert("Note created!");
+                else alert("Failed to make note.");
+                getNotes();
             })
-            .catch((err) => console.log(err))
-            .finally(() => {
-                setLoading(false)
-            })
-    }
+            .catch((err) => alert(err));
+    };
 
     return (
         <div>
@@ -87,11 +76,10 @@ function Home() {
                     onChange={(e) => setContent(e.target.value)}
                 ></textarea>
                 <br />
-                {loading && <LoadingIndicator />}
-                <button type="submit">Submit Note</button>
+                <input type="submit" value="Submit"></input>
             </form>
         </div>
-    )
+    );
 }
 
-export default Home
+export default Home;
